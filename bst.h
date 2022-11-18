@@ -538,8 +538,6 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
     // TODO
     Node<Key, Value>* toRemove = internalFind(key);
 
-    std::cerr << "removing " << key << std::endl;
-
     if (!root_)
     {
         // tree is empty - return by default
