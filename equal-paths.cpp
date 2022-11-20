@@ -3,6 +3,7 @@ using namespace std;
 
 
 // You may add any prototypes of helper functions here
+int pathLengths(Node*);
 
 int pathLengths(Node* root)
 {
@@ -12,11 +13,11 @@ int pathLengths(Node* root)
     }
     else if (!root->left)
     {
-        return pathLengths(root->right);
+        return 1 + pathLengths(root->right);
     }
     else if (!root->right)
     {
-        return pathLengths(root->left);
+        return 1 + pathLengths(root->left);
     }
     else
     {
@@ -36,6 +37,6 @@ int pathLengths(Node* root)
 bool equalPaths(Node * root)
 {
     // Add your code below
-    return (pathLengths(root) != -1);
+    return static_cast<bool>(pathLengths(root) != -1);
 }
 

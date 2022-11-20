@@ -348,8 +348,6 @@ void AVLTree<Key, Value>:: remove(const Key& key)
     // TODO
     AVLNode<Key, Value>* toRemove = static_cast<AVLNode<Key, Value>*>(this->internalFind(key));
 
-    std::cerr << "removing " << key << std::endl;
-
     if (!this->root_)
     {
         // tree is empty - return by default
@@ -362,286 +360,43 @@ void AVLTree<Key, Value>:: remove(const Key& key)
         return;
     }
 
-    bool isRoot = false;
-    if (toRemove == this->root_)
-    {
-        isRoot = true;
-    }
-
-    // removal cases - rewrite these functions 
-
     if (!toRemove->getLeft() && !toRemove->getRight())
     {
-        // this->removeZeroAVLChildren(toRemove);
-
-        AVLNode<Key, Value>* parent = toRemove->getParent();
-        int8_t diff = 0;
-        if (parent)
-        {
-            if (isLeftAVLChild(toRemove))
-            {
-                diff = 1;
-                parent->setLeft(nullptr);
-            }
-            else
-            {
-                diff = -1;
-                parent->setRight(nullptr);
-            }
-        }
-
-        delete toRemove;
-
-        if (isRoot)
-        {
-            this->root_ = nullptr;
-        }
-
-        removeFix(parent, diff);
+        this->removeZeroAVLChildren(toRemove);
+        // remove 0 children case
     }
     else if (toRemove->getLeft() && !toRemove->getRight())
     {
-        // this->removeWithLeftAVLChild(toRemove);
-        AVLNode<Key, Value>* child = toRemove->getLeft();
-        AVLNode<Key, Value>* parent = toRemove->getParent();
-        int8_t diff = 0;
-
-        bool wasLeftChild = isLeftAVLChild(toRemove);
-
-        nodeSwap(child, toRemove);
-
-        if (parent)
-        {
-            if (wasLeftChild)
-            {
-                diff = 1;
-                parent->setLeft(child);
-            }
-            else
-            {
-                diff = -1;
-                parent->setRight(child);
-            }
-        }
-
-        
-
-        child->setParent(parent);
-        child->setLeft(toRemove->getLeft());
-        child->setRight(toRemove->getRight());
-
-        if (child->getLeft())
-        {
-            child->getLeft()->setParent(parent);
-        }
-        if (child->getRight())
-        {
-            child->getRight()->setParent(parent);
-        }
-
-        delete toRemove;
-
-        if (isRoot)
-        {
-            this->root_ = child;
-        }
-        
-        removeFix(parent, diff);
+        this->removeWithLeftAVLChild(toRemove);
         
     }
     else if (!toRemove->getLeft() && toRemove->getRight())
     {
-        // this->removeWithRightAVLChild(toRemove);
-        AVLNode<Key, Value>* child = toRemove->getRight();
-        AVLNode<Key, Value>* parent = toRemove->getParent();
-        int8_t diff = 0;
-
-        bool wasLeftChild = isLeftAVLChild(toRemove);
-
-        nodeSwap(child, toRemove);
-
-        if (parent)
-        {
-            if (wasLeftChild)
-            {
-                diff = 1;
-                parent->setLeft(child);
-            }
-            else
-            {
-                diff = -1;
-                parent->setRight(child);
-            }
-        }
-
-        child->setParent(parent);
-        child->setLeft(toRemove->getLeft());
-        child->setRight(toRemove->getRight());
-
-        if (child->getLeft())
-        {
-            child->getLeft()->setParent(parent);
-        }
-        if (child->getRight())
-        {
-            child->getRight()->setParent(parent);
-        }
-
-        delete toRemove;
-
-        if (isRoot)
-        {
-            this->root_ = child;
-        }
+        this->removeWithRightAVLChild(toRemove);
         
-        removeFix(parent, diff);
-
     }
     else
     {
         // 2 child case
-        
         AVLNode<Key, Value>* pred = predecessor(toRemove);
         nodeSwap(pred, toRemove);
-        if (isRoot)
-        {
-            this->root_ = pred;
-        }
-
-        // int8_t diff = 0;
-        // AVLNode<Key, Value>* parent = toRemove->getParent();
-
-        /*if (parent)
-        {
-            if (isLeftAVLChild(toRemove))
-            {
-                diff = 1;
-            }
-            else
-            {
-                diff = -1;
-            }
-        }*/
-
-        // delete toRemove - call the right functions
 
         if (!toRemove->getLeft() && !toRemove->getRight())
         {
-            // this->removeZeroAVLChildren(toRemove);
-
-            AVLNode<Key, Value>* parent = toRemove->getParent();
-            int8_t diff = 0;
-            if (parent)
-            {
-                if (isLeftAVLChild(toRemove))
-                {
-                    diff = 1;
-                    parent->setLeft(nullptr);
-                }
-                else
-                {
-                    diff = -1;
-                    parent->setRight(nullptr);
-                }
-            }
-
-            delete toRemove;
-
-            removeFix(parent, diff);
+            this->removeZeroAVLChildren(toRemove);
+            // patchup 0 child case
         }
         else if (toRemove->getLeft() && !toRemove->getRight())
         {
-            // this->removeWithLeftAVLChild(toRemove);
-            AVLNode<Key, Value>* child = toRemove->getLeft();
-            AVLNode<Key, Value>* parent = toRemove->getParent();
-            int8_t diff = 0;
-
-            bool wasLeftChild = isLeftAVLChild(toRemove);
-
-            nodeSwap(child, toRemove);
-
-            if (parent)
-            {
-                if (wasLeftChild)
-                {
-                    diff = 1;
-                    parent->setLeft(child);
-                }
-                else
-                {
-                    diff = -1;
-                    parent->setRight(child);
-                }
-            }
-
-            
-
-            child->setParent(parent);
-            child->setLeft(toRemove->getLeft());
-            child->setRight(toRemove->getRight());
-
-            if (child->getLeft())
-            {
-                child->getLeft()->setParent(parent);
-            }
-            if (child->getRight())
-            {
-                child->getRight()->setParent(parent);
-            }
-
-            delete toRemove;
-            
-            removeFix(parent, diff);
+            this->removeWithLeftAVLChild(toRemove);
             
         }
         else // has a right child
         {
-            // this->removeWithRightAVLChild(toRemove);
-            AVLNode<Key, Value>* child = toRemove->getRight();
-            AVLNode<Key, Value>* parent = toRemove->getParent();
-            int8_t diff = 0;
-
-            bool wasLeftChild = isLeftAVLChild(toRemove);
-
-            nodeSwap(child, toRemove);
-
-            if (parent)
-            {
-                if (wasLeftChild)
-                {
-                    diff = 1;
-                    parent->setLeft(child);
-                }
-                else
-                {
-                    diff = -1;
-                    parent->setRight(child);
-                }
-            }
-
-            child->setParent(parent);
-            child->setLeft(toRemove->getLeft());
-            child->setRight(toRemove->getRight());
-
-            if (child->getLeft())
-            {
-                child->getLeft()->setParent(parent);
-            }
-            if (child->getRight())
-            {
-                child->getRight()->setParent(parent);
-            }
-
-            delete toRemove;
+            this->removeWithRightAVLChild(toRemove);
             
-            removeFix(parent, diff);
-
         }
-
-        // removeFix(parent, diff);
     }
-
-    this->print();
 }
 
 template<class Key, class Value>
@@ -672,6 +427,7 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* node, int8_t diff)
             
             if (left->getBalance() == -1)
             {
+                // case 1A: zig-zig
                 rotateRight(node);
                 node->setBalance(0);
                 left->setBalance(0);
@@ -680,6 +436,7 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* node, int8_t diff)
             }
             else if (left->getBalance() == 0)
             {
+                // case 1B: zig-zig
                 rotateRight(node);
                 node->setBalance(-1);
                 left->setBalance(1);
@@ -724,7 +481,7 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* node, int8_t diff)
             removeFix(parent, ndiff);
         }
     }
-    else
+    else // diff == +1
     {
         if (node->getBalance() + diff == 1)
         {
@@ -756,17 +513,17 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* node, int8_t diff)
             }
             else
             {
-                // left->getBalance == +1
+                // left->getBalance == -1
 
                 AVLNode<Key, Value>* g = right->getLeft();
                 rotateRight(right);
                 rotateLeft(node);
 
-                if (g->getBalance() == 1)
+                if (g->getBalance() == -1)
                 {
                     g->setBalance(0);
                     node->setBalance(0);
-                    right->setBalance(-1);
+                    right->setBalance(1);
                 }
                 else if (g->getBalance() == 0)
                 {
@@ -774,7 +531,7 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* node, int8_t diff)
                     node->setBalance(0);
                     right->setBalance(0);
                 }
-                else
+                else // b(g) == 1
                 {
                     g->setBalance(0);
                     node->setBalance(-1);
@@ -788,84 +545,145 @@ void AVLTree<Key, Value>::removeFix(AVLNode<Key, Value>* node, int8_t diff)
 }
 
 template<class Key, class Value>
-void AVLTree<Key, Value>::removeZeroAVLChildren(AVLNode<Key, Value>* removeMe)
+void AVLTree<Key, Value>::removeZeroAVLChildren(AVLNode<Key, Value>* toRemove)
 {
-    if (!removeMe->getParent())
+    bool isRoot = false;
+
+    if (toRemove == this->root_)
     {
-        // we are removing the last node in the tree so root_ is set to nullptr
+        isRoot = true;
+    }
+    AVLNode<Key, Value>* parent = toRemove->getParent();
+    int8_t diff = 0;
+    if (parent)
+    {
+        if (isLeftAVLChild(toRemove))
+        {
+            diff = 1;
+            parent->setLeft(nullptr);
+        }
+        else
+        {
+            diff = -1;
+            parent->setRight(nullptr);
+        }
+    }
+
+    delete toRemove;
+
+    if (isRoot)
+    {
         this->root_ = nullptr;
     }
-    else if (isLeftAVLChild(removeMe))
-    {
-        removeMe->getParent()->setLeft(nullptr);
-        removeMe->getParent()->setBalance(removeMe->getParent()->getBalance() + 1);
-    } 
-    else
-    {
-        removeMe->getParent()->setRight(nullptr);
-        removeMe->getParent()->setBalance(removeMe->getParent()->getBalance() - 1);
-    }
 
-    delete removeMe;
+    removeFix(parent, diff);
 }
 
 template<class Key, class Value>
-void AVLTree<Key, Value>::removeWithLeftAVLChild(AVLNode<Key, Value>* removeMe)
+void AVLTree<Key, Value>::removeWithLeftAVLChild(AVLNode<Key, Value>* toRemove)
 {
     bool isRoot = false;
-    if (removeMe == this->root_)
+    if (toRemove == this->root_)
     {
         isRoot = true;
-    }
-    AVLNode<Key, Value>* child = removeMe->getLeft();
-    nodeSwap(child, removeMe);
-    child->setLeft(removeMe->getLeft());
-    child->setRight(removeMe->getRight());
-    if (removeMe->getLeft())
-    {
-        removeMe->getLeft()->setParent(child);
-    }
-    // add another if statement in case removeme has a right child after the swap
-    if (removeMe->getRight())
-    {
-        removeMe->getRight()->setParent(child);
-    }
-
-    delete removeMe;
-
-    if (isRoot)
-    {
-        this->root_ = child;
-    }
-}
-
-template<class Key, class Value>
-void AVLTree<Key, Value>::removeWithRightAVLChild(AVLNode<Key, Value>* removeMe)
-{
-    bool isRoot = false;
-    if (removeMe == this->root_)
-    {
-        isRoot = true;
-    }
-    AVLNode<Key, Value>* child = removeMe->getRight();
-    nodeSwap(child, removeMe);
-    child->setLeft(removeMe->getLeft());
-    child->setRight(removeMe->getRight());
-    if (removeMe->getRight())
-    {
-        removeMe->getRight()->setParent(child);
-    }
-    if (removeMe->getLeft())
-    {
-        removeMe->getLeft()->setParent(child);
     }
     
-    delete removeMe;
+    AVLNode<Key, Value>* child = toRemove->getLeft();
+    AVLNode<Key, Value>* parent = toRemove->getParent();
+    int8_t diff = 0;
+
+    bool wasLeftChild = isLeftAVLChild(toRemove);
+
+    nodeSwap(child, toRemove);
+
+    if (parent)
+    {
+        if (wasLeftChild)
+        {
+            diff = 1;
+            parent->setLeft(child);
+        }
+        else
+        {
+            diff = -1;
+            parent->setRight(child);
+        }
+    }
+
+    child->setParent(parent);
+    child->setLeft(toRemove->getLeft());
+    child->setRight(toRemove->getRight());
+
+    if (child->getLeft())
+    {
+        child->getLeft()->setParent(parent);
+    }
+    if (child->getRight())
+    {
+        child->getRight()->setParent(parent);
+    }
+
+    delete toRemove;
 
     if (isRoot)
     {
         this->root_ = child;
     }
+    
+    removeFix(parent, diff);
+}
+
+template<class Key, class Value>
+void AVLTree<Key, Value>::removeWithRightAVLChild(AVLNode<Key, Value>* toRemove)
+{
+    bool isRoot = false;
+    if (toRemove == this->root_)
+    {
+        isRoot = true;
+    }
+    AVLNode<Key, Value>* child = toRemove->getRight();
+    AVLNode<Key, Value>* parent = toRemove->getParent();
+    int8_t diff = 0;
+
+    bool wasLeftChild = isLeftAVLChild(toRemove);
+
+    nodeSwap(child, toRemove);
+
+    if (parent)
+    {
+        if (wasLeftChild)
+        {
+            diff = 1;
+            parent->setLeft(child);
+        }
+        else
+        {
+            diff = -1;
+            parent->setRight(child);
+        }
+    }
+
+    child->setParent(parent);
+    child->setLeft(toRemove->getLeft());
+    child->setRight(toRemove->getRight());
+
+    if (child->getLeft())
+    {
+        child->getLeft()->setParent(parent);
+    }
+    if (child->getRight())
+    {
+        child->getRight()->setParent(parent);
+    }
+
+    delete toRemove;
+
+    if (isRoot)
+    {
+        this->root_ = child;
+    }
+    
+    removeFix(parent, diff);
 }
 
 
@@ -987,7 +805,6 @@ bool AVLTree<Key, Value>::outOfBalance(const AVLNode<Key, Value>* current) const
 template<class Key, class Value>
 void AVLTree<Key, Value>::rotateLeft(AVLNode<Key, Value>* node)
 {
-    std::cerr << "rotating LEFT at " << node->getKey() << std::endl;
     bool isRoot = false;
     if (node == this->root_)
     {
@@ -1025,7 +842,6 @@ void AVLTree<Key, Value>::rotateLeft(AVLNode<Key, Value>* node)
 template<class Key, class Value>
 void AVLTree<Key, Value>::rotateRight(AVLNode<Key, Value>* node)
 {
-    std::cerr << "rotating RIGHT at " << node->getKey() << std::endl;
     bool isRoot = false;
     if (node == this->root_)
     {
