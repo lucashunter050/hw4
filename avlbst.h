@@ -141,14 +141,12 @@ protected:
     void rotateLeft(AVLNode<Key, Value>* node);
     void rotateRight(AVLNode<Key, Value>* node);
     bool zigZig(const AVLNode<Key, Value>* node) const;
-    bool zigZag(const AVLNode<Key, Value>* node) const;
     void insertFix(AVLNode<Key, Value>* node1, AVLNode<Key, Value>* node2);
     void removeFix(AVLNode<Key, Value>* node, int8_t diff);
     static AVLNode<Key, Value>* predecessor(AVLNode<Key, Value>* node);
 
     static bool isRightAVLChild(const AVLNode<Key, Value>* current);
     static bool isLeftAVLChild(const AVLNode<Key, Value>* current);
-    bool outOfBalance(const AVLNode<Key, Value>* current) const;
 
     void removeZeroAVLChildren(AVLNode<Key, Value>* current);
     void removeWithLeftAVLChild(AVLNode<Key, Value>* current);
@@ -716,37 +714,6 @@ bool AVLTree<Key, Value>::zigZig(const AVLNode<Key, Value>* node) const
     }
 }
     
-
-template<class Key, class Value>
-bool AVLTree<Key, Value>::zigZag(const AVLNode<Key, Value>* node) const
-{
-    // sees if the current node creates a zig-zag condition
-    if (!node)
-    {
-        return false;
-    }
-
-    if (!node->getParent())
-    {
-        return false;
-    }
-
-    if (!node->getParent()->getParent())
-    {
-        return false;
-    }
-
-    if ((isRightAVLChild(node) && isLeftAVLChild(node->getParent())) || 
-        (isLeftAVLChild(node) && isRightAVLChild(node->getParent())))
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
 template<class Key, class Value>
 bool AVLTree<Key, Value>::isRightAVLChild(const AVLNode<Key, Value>* current)
 {
@@ -780,19 +747,6 @@ bool AVLTree<Key, Value>::isLeftAVLChild(const AVLNode<Key, Value>* current)
         return false;
     } 
     else if (current->getParent()->getLeft() == current)
-    {
-        return true;
-    }
-    else
-    {
-        return false;
-    }
-}
-
-template<class Key, class Value>
-bool AVLTree<Key, Value>::outOfBalance(const AVLNode<Key, Value>* current) const
-{
-    if (current->getBalance() < -1 || current->getBalance() > 1)
     {
         return true;
     }

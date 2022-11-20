@@ -476,9 +476,6 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
     Key insertKey = keyValuePair.first;
     Value insertValue = keyValuePair.second;
 
-    std::cerr << "inserting " << insertKey << std::endl;
-
-    // std::cout << "Preparing to insert: " << insertKey << std::endl;
     // empty tree - make the pair the root
     if (!root_)
     {
@@ -522,8 +519,6 @@ void BinarySearchTree<Key, Value>::insert(const std::pair<const Key, Value> &key
             }
         }
     }
-
-    // print();
 }
 
 
@@ -599,10 +594,7 @@ void BinarySearchTree<Key, Value>::remove(const Key& key)
             // toRemove has a right child - remove it
             this->removeWithRightChild(toRemove);
         }
-    }
-
-    print();
-    
+    }    
 }
 
 template<class Key, class Value>
